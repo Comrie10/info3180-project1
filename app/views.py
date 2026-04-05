@@ -9,8 +9,10 @@ from app import app, db
 from flask import render_template, request, redirect, url_for, flash, session, abort, send_from_directory
 from werkzeug.utils import secure_filename
 from werkzeug.datastructures import FileStorage
+from app import mail
+from flask_mail import Message
 from app.models import Property
-from app.forms import New_Property
+from app.forms import New_Property, ContactForm
 
 
 ###
@@ -105,6 +107,26 @@ def properties():
 def property_details(propertyid):
     property =  Property.query.get_or_404(propertyid)
     return render_template('property.html', property=property)
+
+@app.route('/contact', methods=['GET','POST'])
+def contact():
+    """Render the website's contact form page."""
+    form = ContactForm()
+    if form.validate_on_submit(): 
+        name = form.name.data
+        email = form.email.data
+        subject = form.subject.data
+        msg_body = form.msg.data
+        mess_age = Message(
+            subject = subject,
+            sender = (name, email),
+            recipients=['tanisha.comrie@mymona.uwi.edu'])
+        mess_age.body = msg_body
+        mail.send(mess_age)
+
+        flash (f"{name}, Message has been sent sucessfully!", 'success')
+        return redirect(url_for('properties'))
+    return render_template('contact.html', form=form)
 
 
 @app.after_request
