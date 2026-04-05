@@ -73,18 +73,22 @@ def create ():
         filepath = os.path.join(app.config["UPLOAD_FOLDER"],filename)
         img.save(filepath)
 
+        price = form.price.data 
+        price = str(price).replace(',', ''),
+
         property = Property(
-            title = form.P_title.data,
-            descrption = form.description.data,
-            bedrooms = form.num_room.data,
-            bathrooms = form.num_b_room.data,
-            location = form.Location.data,
-            property_type = form.P_type.data,
+            title = form.title.data,
+            description=form.description.data,
+            bedrooms = form.bedrooms.data,
+            bathrooms = form.bathrooms.data,
+            location = form.location.data,
+            price = price,
+            property_type = form.property_type.data,
             photo=filename
                             )
         
         db.session.add(property)
-        db.session.comit()
+        db.session.commit()
 
         flash('Property Successfully Saved', 'success')
         return redirect(url_for('properties'))
