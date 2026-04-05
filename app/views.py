@@ -60,7 +60,9 @@ def send_text_file(file_name):
     return app.send_static_file(file_dot_text)
 
 
-
+@app.route('/uploads/<filename>')
+def get_images(filename):
+    return send_from_directory(app.config["UPLOAD_FOLDER"], filename)
 
 @app.route('/properties/create', methods=['GET','POST'])
 def create ():
@@ -73,8 +75,7 @@ def create ():
         filepath = os.path.join(app.config["UPLOAD_FOLDER"],filename)
         img.save(filepath)
 
-        price = form.price.data 
-        price = str(price).replace(',', ''),
+        
 
         property = Property(
             title = form.title.data,
@@ -82,7 +83,7 @@ def create ():
             bedrooms = form.bedrooms.data,
             bathrooms = form.bathrooms.data,
             location = form.location.data,
-            price = price,
+            price = str(form.price.data).replace(',', ''),
             property_type = form.property_type.data,
             photo=filename
                             )
@@ -95,10 +96,10 @@ def create ():
     flash_errors(form)
     return render_template('create.html', form=form)
 
-@app.route('/properties',methods=['GET','POST'])
+@app.route('/properties',methods=['GET'])
 def properties():
-    images = get_uploaded_images()
-    return render_template('properties.html',images=images)
+    properties = Property.query.all()
+    return render_template('properties.html',properties=properties)
 
 @app.route('/properties/<propertyid>')
 def property_details(propertyid):

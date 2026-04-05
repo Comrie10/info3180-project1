@@ -1,13 +1,35 @@
 {% extends 'base.html' %}
 
-{% block content %}
+{% block main %}
+<h1 class="page-header">Properties</h1>
 
 <ul>
-    {% for img in images %}
+    {% for property in properties %}
         <li>
-            <img src="{{ url_for('get_images', filename=img)}}" max-width="200">
+            <div class="card">
+                <div class="image">
+                <img src="{{ url_for('get_images', filename=property.photo)}}" style="max-width: 200px;">
+                </div>
+                <h3>
+                    {{property.title}}
+                </h3>
+                <p>
+                    {{property.location}}
+                </p>
+                <div class="sum">
+                <p>
+                    {{property.price}}
+                </p>
+                </div>
+                <div class="bottom">
+                <a href="{{url_for('property_details',propertyid=property.id)}}" class="btn btn-primary w-100">View Property</a>
+                </div>
+            </div>
         </li>
+    {% else %}
+        <p>No Properties found</p>
     {% endfor %}
 </ul>
+   
 
 {% endblock %}
