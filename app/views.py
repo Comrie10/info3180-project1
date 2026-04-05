@@ -4,9 +4,13 @@ Jinja2 Documentation:    https://jinja.palletsprojects.com/
 Werkzeug Documentation:  https://werkzeug.palletsprojects.com/
 This file contains the routes for your application.
 """
-
-from app import app
-from flask import render_template, request, redirect, url_for
+import os
+from app import app, db
+from flask import render_template, request, redirect, url_for, flash, session, abort, send_from_directory
+from werkzeug.utils import secure_filename
+from werkzeug.datastructures import FileStorage
+from app.models import Property
+from app.forms import New_Property
 
 
 ###
@@ -29,6 +33,17 @@ def about():
 # The functions below should be applicable to all Flask apps.
 ###
 
+def get_uploaded_images():
+    rootdir = os.getcwd()
+    print (rootdir)
+    images = []
+    for subdir, dirs, files in os.walk(rootdir + "/uploads"):
+        for file in files:
+            print (os.path.join(subdir, file))
+            relative_path = os.path.relpath ((os.path.join(subdir, file)),(app.config["UPLOAD_FOLDER"]))
+            images.append(relative_path)
+    return images
+
 # Display Flask WTF errors as Flash messages
 def flash_errors(form):
     for field, errors in form.errors.items():
@@ -43,6 +58,48 @@ def send_text_file(file_name):
     """Send your static text file."""
     file_dot_text = file_name + '.txt'
     return app.send_static_file(file_dot_text)
+
+
+
+
+@app.route('/properties/create', methods=['GET','POST'])
+def create ():
+
+    form = New_Property()
+
+    if form.validate_on_submit():
+        img = form.photo.data
+        filename = secure_filename(img.filename)
+        filepath = os.path.join(app.config["UPLOAD_FOLDER"],filename)
+        img.save(filepath)
+
+        property = Property(
+            title = form.P_title.data,
+            descrption = form.description.data,
+            bedrooms = form.num_room.data,
+            bathrooms = form.num_b_room.data,
+            location = form.Location.data,
+            property_type = form.P_type.data,
+            photo=filename
+                            )
+        
+        db.session.add(property)
+        db.session.comit()
+
+        flash('Property Successfully Saved', 'success')
+        return redirect(url_for('properties'))
+    flash_errors(form)
+    return render_template('create.html', form=form)
+
+@app.route('/properties',methods=['GET','POST'])
+def properties():
+    images = get_uploaded_images()
+    return render_template('properties.html',images=images)
+
+@app.route('/properties/<propertyid>')
+def property_details(propertyid):
+    property =  Property.query.get_or_404(propertyid)
+    return render_template('property.html', property=property)
 
 
 @app.after_request

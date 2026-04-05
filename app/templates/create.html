@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block main %}
+<h1 class="page-header">List Property</h1>
+
+{% include "flash_message.html" %}
+
+<form action="{{url_for('create')}}" method="POST" enctype="multipart/form-data">
+
+    
+  {{ form.csrf_token }}
+
+  {{form.hidden_tag()}} 
+  <div>
+    {{form.title.label}} 
+  </div>
+  <div>
+      {{form.title}}
+  </div>
+  <div>
+    {{form.description.label}}
+  </div>
+  <div>
+      {{form.description}}
+  </div>
+  <div>
+    {{form.bedrooms.label}}
+  </div> 
+  <div>
+    {{form.bedrooms}}
+  </div>
+  <div>
+    {{form.bathrooms.label}}
+  </div>
+  <div>
+      {{form.bathrooms}}
+  </div>
+  <div>
+   {{form.price.label}} 
+  </div>
+  <div>
+    {{form.price}}
+  </div>
+  <div>
+    {{form.property_type.label}} {{form.property_type}}
+  </div>
+  <div>
+    {{form.location.label}}
+  </div>
+  <div>
+    {{form.location}}
+  </div>
+  <div>
+    {{form.photo.label}} {{form.photo}}
+  </div>
+  <div>
+  <button type="submit" name="submit" class="btn btn-primary"> Add Property</button>
+  </div>
+
+</form>
+
+{% endblock %}
