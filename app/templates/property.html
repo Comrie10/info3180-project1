@@ -23,17 +23,19 @@
         </div>
         <div>
             <tag>
-                {{property.bedrooms}}
+                {{property.bedrooms}} 
+                <label>Bedrooms</label>
             </tag>
             <tag>
                 {{property.bathrooms}}
+                <label>Bathrooms</label>
             </tag>
         </div>
         <div>
             {{property.location}}
         </div>
         <div>
-            <a href="{{ url_for('contact') }}" class="btn btn-secondary">Email Realtor</a>
+            <a href="{{ url_for('contact') }}" class="btn btn-primary">Email Realtor</a>
         </div>
     </div>
 </div>
